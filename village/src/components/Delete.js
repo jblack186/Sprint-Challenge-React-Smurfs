@@ -1,25 +1,36 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-class SmurfForm extends Component {
+class Delete extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      items: [],
       name: '',
       age: '',
       height: ''
     };
   }
 
+componentDidMount() {
+  const id = this.props.match.params.id
+axios.get(`http://localhost:3333/smurfs/${id}`)
+.then(response => {
+  const {name, age, height} = response.data
+  this.setState({ name, age, height })
+})
+}
+
   addSmurf = event => {
-   
+    event.preventDefault();
     // add code to create the smurf using the api
    
       event.preventDefault()
+
       axios.post(`http://localhost:3333/smurfs`, this.state)
       .then(response => {
           console.log(response)
-         this.props.history.push('/') 
+
       })
       .catch(error => {
           console.log(error)
@@ -35,12 +46,27 @@ class SmurfForm extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+
+
+updateItem = (e) => {
+  e.preventDefault();
+  const { name, age, height } = this.state
+  const payload = { name, age, height }
+  const id = this.props.match.params.id
+
+  axios.put(`http://localhost:3333/smurfs/${id}`, payload) 
+  .then(response => console.log(response))
+  .catch ((err) => {
+    console.log(err)
+  })
+}
+
   
+
   render() {
-    console.log(this.props)
     return (
       <div className="SmurfForm">
-        <form onSubmit={this.addSmurf}>
+        <form onSubmit={this.deleteSmurf}>
           <input
             onChange={this.handleInputChange}
             placeholder="name"
@@ -66,4 +92,4 @@ class SmurfForm extends Component {
   }
 }
 
-export default SmurfForm;
+export default Delete;
